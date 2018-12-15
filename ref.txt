@@ -1,0 +1,70 @@
+#to create a virtual env in python3
+python3 -m venv name_of_venv
+source name_of_venv/bin/activate
+
+#starting the flask project
+export FLASK_APP=microblog.py
+flask run
+
+#or, using the python-dotenv package, so you don't have to export that env var in every terminal:
+pip install python-dotenv
+(within .flaskenv in the top-level dir): FLASK_APP=microblog.py
+
+
+
+(venv) $ pip install flask-sqlalchemy
+(venv) $ pip install flask-migrate
+flask db init #creates the migrations directory
+flask db migrate -m "hey there, this is the first migration"
+flask db migrate -m "users table"
+#migrate command does no make any changes to the database, just generates the migration script
+flask db upgrade	#applies changes
+#if using MySQL or PostgreSQL, must create database server before running upgrade
+#Note: Flask-SQLAlchemy uses 'snake case'
+
+
+Ex:
+from app import db
+from app.models import User, Post
+u = User(username='Sam', email='samwell@example.com')
+db.session.add(u)
+db.session.commit()
+db.session.rollback() #can call if errors are encountered
+u = User(username='Susan', email='susan@anotherexample.com')
+db.session.add(u)
+db.session.commit()
+users = User.query.all()
+for u in users:
+	print(u.id, u.username)
+u = User.query.get(1)
+p = Post(body='my first post', author=u)
+db.session.add(p)
+db.session.commit()
+posts = u.posts.all()
+
+#to delete
+users = User.query.all()
+for u in users:
+	db.session.delete(u)
+posts = Post.query.all()
+for p in posts:
+	db.session.delete(p)
+db.session.commit()
+
+
+
+flask shell #starts a Python interpreter in the context of the application--used for testing/play
+
+
+
+demo:
+from werkzeug.security import generate_password_hash, check_password_hash
+hash = generate_password_hash('foobar')
+check_password_hash(hash, 'foobar') -> True
+check_password_hash(hash, 'something') -> False
+
+
+
+pip install flask-login
+
+
